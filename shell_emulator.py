@@ -107,3 +107,36 @@ class ShellEmulator:
 
     def echo(self, args):
         return " ".join(args)
+
+class ShellGUI(tk.Tk):
+    def __init__(self, emulator):
+        super().__init__()
+        self.emulator = emulator
+        self.title(f"Shell Emulator - {self.emulator.user}")
+        self.geometry("600x400")
+
+        self.output_text = scrolledtext.ScrolledText(self, wrap=tk.WORD, height=20, width=70)
+        self.output_text.grid(row=0, column=0, padx=10, pady=10)
+        self.output_text.config(state=tk.DISABLED)
+
+        self.input_text = tk.Entry(self, width=70)
+        self.input_text.grid(row=1, column=0, padx=10, pady=10)
+        self.input_text.bind("<Return>", self.on_enter)
+
+        self.display_prompt()
+
+    def display_prompt(self):
+        prompt = f"{self.emulator.user}@shell:{self.emulator.current_dir}$ "
+        self.input_text.delete(0, tk.END)
+        self.input_text.insert(tk.END, prompt)
+        self.input_text.focus()
+
+    def on_enter(self, event):
+        command = self.input_text.get()
+        if command:
+            self.output_text.config(state=tk.NORMAL)
+            output = self.emulator.execute_command(command)
+            self.output_text.insert(tk.END, f"{command}\n{output}\n")
+            self.output_text.config(state=tk.DISABLED)
+            self.emulator.log_action(command)
+        self.display_prompt()

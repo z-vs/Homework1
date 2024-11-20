@@ -12,6 +12,20 @@ class TestShellEmulator(unittest.TestCase):
         self.assertIn("/home/testuser/file2.txt", result)
         self.assertNotIn("No files found.", result)
 
+    def test_cd(self):
+        result = self.emulator.cd(["home/testuser"])
+        self.assertEqual(self.emulator.current_dir, "/home/testuser")
+
+        result = self.emulator.cd([".."])
+        self.assertEqual(self.emulator.current_dir, "/home")
+
+        result = self.emulator.cd(["folder"])
+        self.assertEqual(result, "Directory 'folder' not found.")
+
+    def test_uniq(self):
+        result = self.emulator.uniq(["apple\napple\nbanana\nbanana"])
+        self.assertEqual(result, "apple\nbanana")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -140,3 +140,13 @@ class ShellGUI(tk.Tk):
             self.output_text.config(state=tk.DISABLED)
             self.emulator.log_action(command)
         self.display_prompt()
+
+
+def main():
+    emulator = ShellEmulator("config.json")
+    app = ShellGUI(emulator)
+    app.mainloop()
+
+
+if __name__ == "__main__":
+    main()

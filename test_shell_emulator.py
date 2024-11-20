@@ -26,6 +26,13 @@ class TestShellEmulator(unittest.TestCase):
         result = self.emulator.uniq(["apple\napple\nbanana\nbanana"])
         self.assertEqual(result, "apple\nbanana")
 
+    def test_whoami(self):
+        result = self.emulator.whoami([])
+        self.assertEqual(result, "username")
+
+    def test_echo(self):
+        result = self.emulator.echo(["Hello", "world!"])
+        self.assertEqual(result, "Hello world!")
 
 if __name__ == '__main__':
     unittest.main()

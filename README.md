@@ -117,7 +117,10 @@ echo <текст_для_вывода>
 
 ### Примеры использования
 
+![image](https://github.com/user-attachments/assets/e1fcd12a-6440-4cdc-9e49-b2f6218ca844)
+
 ![image](https://github.com/user-attachments/assets/e91a3a7d-5955-491f-b532-2f929babf423)
+
 ![image](https://github.com/user-attachments/assets/e7c78fbc-87bf-4ec8-8774-913ac8dfc03d)
 
 ### Результаты прогона тестов

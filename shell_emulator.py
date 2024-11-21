@@ -71,6 +71,7 @@ class ShellEmulator:
 
         target_dir = args[0]
 
+        # Check if the directory exists in the filesystem
         if target_dir == "..":
             self.current_dir = os.path.dirname(self.current_dir.rstrip('/'))
             if self.current_dir == "":
@@ -81,10 +82,11 @@ class ShellEmulator:
             else:
                 new_dir = os.path.join(self.current_dir, target_dir)
 
-                if any(file.startswith(new_dir.lstrip('/')) for file in self.fs):
+                if any(file.startswith(new_dir.lstrip('/')) for file in
+                       self.fs):  # check if directory exists in the filesystem
                     self.current_dir = new_dir
                 else:
-                    return f"Directory '{target_dir}' not found."
+                    return f"Directory '{target_dir}' not found."  # Correct error message
 
         if self.current_dir.startswith("./"):
             self.current_dir = "/" + self.current_dir[2:]

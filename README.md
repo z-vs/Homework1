@@ -125,5 +125,6 @@ echo <текст_для_вывода>
 
 ### Результаты прогона тестов
 
-![image](https://github.com/user-attachments/assets/31f45aa1-8056-4722-be20-3c5f173ed402)
+![image](https://github.com/user-attachments/assets/d67e1781-1543-4cf4-83cd-736057d6211d)
+
 

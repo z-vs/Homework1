@@ -108,9 +108,15 @@ class ShellEmulator:
 
     def uniq(self, args):
         if not args:
-            return "No input provided."
-        input_data = args[0]
-        output = "\n".join(sorted(set(input_data.split('\n'))))
+            return "No file name provided."
+
+        filename = args[0]
+        if filename not in self.fs:
+            return f"File '{filename}' not found."
+        file_content = self.fs[filename]
+        lines = file_content.splitlines()
+        unique_lines = sorted(set(lines))
+        output = "\n".join(unique_lines)
         return output
 
     def whoami(self, args):

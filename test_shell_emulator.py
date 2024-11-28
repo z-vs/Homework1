@@ -1,76 +1,56 @@
-import os
-import tarfile
-import json
-import unittest
 from shell_emulator import ShellEmulator
+import unittest
+from io import StringIO
+from unittest.mock import patch
 
 class TestShellEmulator(unittest.TestCase):
-
     def setUp(self):
-        self.config_data = {
-            "user": "username",
-            "fs_archive": "C:\\Users\\zvs11\\config1p.tar",
-            "log_file": "C:\\Users\\zvs11\\log.csv"
+        self.emulator = ShellEmulator("config.json")
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_ls_directories(self, mock_stdout):
+        self.emulator.current_dir = '/'
+        output = self.emulator.ls([])
+        self.assertIn('etc', output)
+        self.assertIn('home', output)
+        self.assertIn('tmp', output)
+        self.assertIn('example.txt', output)
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_ls_home_directory(self, mock_stdout):
+        self.emulator.current_dir = '/home'
+        output = self.emulator.ls([])
+        self.assertIn('testuser', output)
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_ls_testuser_directory(self, mock_stdout):
+        self.emulator.current_dir = '/home/testuser'
+        output = self.emulator.ls([])
+        self.assertIn('file1.txt', output)
+        self.assertIn('file2.txt', output)
+
+    def test_cd_to_home(self):
+        self.emulator.current_dir = '/'
+        output = self.emulator.cd(['home'])
+        self.assertEqual(self.emulator.current_dir, '/home')
+        self.assertEqual(output, "Changed to directory /home")
+
+    def test_cd_to_nonexistent_directory(self):
+        self.emulator.current_dir = '/'
+        output = self.emulator.cd(['nonexistent'])
+        self.assertEqual(output, "Directory 'nonexistent' not found.")
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_uniq_example_file(self, mock_stdout):
+        self.emulator.fs = {
+            '/example.txt': "line1\nline2\nline1\nline3\nline2"
         }
+        output = self.emulator.uniq(['/example.txt'])
+        self.assertEqual(output, "line1\nline2\nline3")
 
-        with open("test_config.json", 'w') as f:
-            json.dump(self.config_data, f)
-
-        with tarfile.open("C:\\Users\\zvs11\\config1p.tar", "w") as tar:
-            dummy_file = tarfile.TarInfo(name="dummy_file.txt")
-            dummy_file.size = 0
-            tar.addfile(dummy_file)
-
-        self.emulator = ShellEmulator("test_config.json")
-
-    def tearDown(self):
-        os.remove("test_config.json")
-
-    def test_ls(self):
-        self.emulator.current_dir = "/"
-        result = self.emulator.ls([])
-        expected = "dummy_file.txt"
-        self.assertEqual(result, expected)
-
-    def test_ls_no_files(self):
-        self.emulator.current_dir = "/nonexistent"
-        result = self.emulator.ls([])
-        expected = "No directories found."
-        self.assertEqual(result, expected)
-
-    def test_cd_valid_directory(self):
-        self.emulator.current_dir = "/"
-        result = self.emulator.cd(["dummy_file.txt"])
-        expected = "Changed to directory /dummy_file.txt"
-        self.assertEqual(result, expected)
-
-    def test_cd_invalid_directory(self):
-        self.emulator.current_dir = "/"
-        result = self.emulator.cd(["nonexistent_dir"])
-        expected = "Directory 'nonexistent_dir' not found."
-        self.assertEqual(result, expected)
-
-    def test_exit(self):
-        self.emulator.current_dir = "/"
-        result = self.emulator.exit_shell([])
-        expected = "Exiting shell."
-        self.assertEqual(result, expected)
-
-    def test_exit_logs(self):
-        self.emulator.exit_shell([])
-        with open(self.config_data['log_file'], 'r') as log:
-            log_content = log.readlines()
-        self.assertTrue("exit" in log_content[-1])
-
-    def test_uniq(self):
-        result = self.emulator.uniq(["line1\nline2\nline1"])
-        expected = "line1\nline2"
-        self.assertEqual(result, expected)
-
-    def test_uniq_empty_input(self):
-        result = self.emulator.uniq([""])
-        expected = ""
-        self.assertEqual(result, expected)
+    def test_uniq_file_not_found(self):
+        output = self.emulator.uniq(['/nonexistent.txt'])
+        self.assertEqual(output, "File '/nonexistent.txt' not found.")
 
     def test_whoami(self):
         result = self.emulator.whoami([])
@@ -92,5 +72,17 @@ class TestShellEmulator(unittest.TestCase):
         expected = ""
         self.assertEqual(result, expected)
 
-if __name__ == "__main__":
+    def test_exit(self):
+        self.emulator.current_dir = "/"
+        result = self.emulator.exit_shell([])
+        expected = "Exiting shell."
+        self.assertEqual(result, expected)
+
+    def test_exit_logs(self):
+        self.emulator.exit_shell([])
+        with open(self.emulator.log_file, 'r') as log:
+            log_content = log.readlines()
+        self.assertTrue("exit" in log_content[-1], f"Expected 'exit' to be in the last log entry, but got {log_content[-1]}")
+
+if __name__ == '__main__':
     unittest.main()

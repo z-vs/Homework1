@@ -120,13 +120,11 @@ echo <текст_для_вывода>
 
 ### Примеры использования
 
-![image](https://github.com/user-attachments/assets/dfbc46b8-ce43-4ae8-b0b9-51c3227b132b)
-
-![image](https://github.com/user-attachments/assets/dc9f7127-99ac-41e2-bc9a-464e28589136)
-
+![image](https://github.com/user-attachments/assets/be24c5e1-3d42-4fff-8b67-b9a89d30eb40)
 
 ### Результаты прогона тестов
 
-![image](https://github.com/user-attachments/assets/d67e1781-1543-4cf4-83cd-736057d6211d)
+![image](https://github.com/user-attachments/assets/713f8d4e-d564-45c3-a9cb-e08585fd66ec)
+
 
 

@@ -16,13 +16,13 @@ class TestShellEmulator(unittest.TestCase):
         self.assertIn('tmp', output)
         self.assertIn('example.txt', output)
 
-    @patch('sys.stdout', new_callable=StringIO)
+
     def test_ls_home_directory(self, mock_stdout):
         self.emulator.current_dir = '/home'
         output = self.emulator.ls([])
         self.assertIn('testuser', output)
 
-    @patch('sys.stdout', new_callable=StringIO)
+
     def test_ls_testuser_directory(self, mock_stdout):
         self.emulator.current_dir = '/home/testuser'
         output = self.emulator.ls([])
@@ -40,7 +40,7 @@ class TestShellEmulator(unittest.TestCase):
         output = self.emulator.cd(['nonexistent'])
         self.assertEqual(output, "Directory 'nonexistent' not found.")
 
-    @patch('sys.stdout', new_callable=StringIO)
+
     def test_uniq_example_file(self, mock_stdout):
         self.emulator.fs = {
             '/example.txt': "line1\nline2\nline1\nline3\nline2"

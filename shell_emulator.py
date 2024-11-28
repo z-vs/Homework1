@@ -56,14 +56,22 @@ class ShellEmulator:
             return f"Unknown command: {cmd}"
 
     def ls(self, args):
-        files_in_dir = [
-            file for file in self.fs if file.startswith(self.current_dir.lstrip('/'))
-        ]
+        dirs = set()
+        for file in self.fs:
+            file_parts = file.lstrip('/').split('/')
+            if file.startswith(self.current_dir.lstrip('/')):
+                parts_after_current_dir = file.lstrip(self.current_dir.lstrip('/')).strip('/')
 
-        if files_in_dir:
-            return "\n".join([f"/{file}" for file in files_in_dir])
+                if '/' in parts_after_current_dir:
+                    sub_dir = parts_after_current_dir.split('/')[0]
+                    dirs.add(sub_dir)
+                elif len(parts_after_current_dir) > 0:
+                    dirs.add(parts_after_current_dir)
+
+        if dirs:
+            return "\n".join(sorted(dirs))
         else:
-            return "No files found."
+            return "No directories found."
 
     def cd(self, args):
         if not args:
@@ -71,27 +79,28 @@ class ShellEmulator:
 
         target_dir = args[0]
 
-        # Check if the directory exists in the filesystem
-        if target_dir == "..":
-            self.current_dir = os.path.dirname(self.current_dir.rstrip('/'))
-            if self.current_dir == "":
-                self.current_dir = "/"
+        if target_dir.startswith("/"):
+            self.current_dir = target_dir
         else:
-            if target_dir.startswith("/"):
-                self.current_dir = target_dir
+            if target_dir == "..":
+                self.current_dir = os.path.dirname(self.current_dir.rstrip('/'))
+                if self.current_dir == "":
+                    self.current_dir = "/"
             else:
                 new_dir = os.path.join(self.current_dir, target_dir)
-
-                if any(file.startswith(new_dir.lstrip('/')) for file in
-                       self.fs):  # check if directory exists in the filesystem
+                if any(file.startswith(new_dir.lstrip('/')) for file in self.fs):
                     self.current_dir = new_dir
                 else:
-                    return f"Directory '{target_dir}' not found."  # Correct error message
+                    return f"Directory '{target_dir}' not found."
 
         if self.current_dir.startswith("./"):
             self.current_dir = "/" + self.current_dir[2:]
 
+        if self.current_dir == "":
+            self.current_dir = "/"
+
         return f"Changed to directory {self.current_dir}"
+
 
     def exit_shell(self, args):
         self.log_action("exit")
